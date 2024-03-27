@@ -22,9 +22,7 @@ const App = () => {
 
   useEffect(() => {
     setUser(JSON.parse(localStorage.getItem("user")));
-    // if (user) {
-    //   navigate("/chat");
-    // }
+   
 
     const fetchAllUser = async () => {
       const user = await getAlluser();
@@ -59,7 +57,7 @@ const App = () => {
 
           {user ? (
             <div className="flex  justify-end gap-5">
-              {/* create search bar */}
+            
               <div>
                 <input
                   className="border-2 mt-1 border-gray-300 bg-white h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none"
