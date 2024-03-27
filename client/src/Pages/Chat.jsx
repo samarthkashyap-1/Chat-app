@@ -37,7 +37,7 @@ const Chat = ({ newChat }) => {
 
   const [groupChat, setGroupChat] = useState([]);
   const [file, setFile] = useState(null);
-  A;
+  
   const chatScroll = useRef();
 
   const uploadClick = useRef(null);
