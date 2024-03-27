@@ -23,10 +23,7 @@ const getFiles = async (req, res) => {
   try {
     const files = await File.findById(chatId);
 
-    //
-
     const contentType = files.contentType;
-    //
 
     res.set("Content-Type", contentType);
     res.download(files.path, files.name);
