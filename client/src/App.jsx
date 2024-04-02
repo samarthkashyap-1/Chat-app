@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import Login from "./Pages/Login";
 import Register from "./Pages/Register";
@@ -11,18 +11,24 @@ import { Context } from "./Apis/Context";
 import ShareButton from "./components/ShareButton";
 import Home from "./Pages/Home";
 import About from "./Pages/About";
+import { SocketContext } from "./Apis/SocketProvider";
+import Notification from "./components/Notification";
+
 
 const App = () => {
+  const { socket } = useContext(SocketContext);
+  const [chatingto, setChatingto] = useState(null);
   const [user, setUser] = useState(null);
   const [allUser, setAllUser] = useState([]);
   const [search, setSearch] = useState("");
   const [newChat, setNewChat] = useState(0);
   const [dataToSend, setDataToSend] = useState();
+  const [allNotification, setAllNotification] = useState([]);
+
   const navigate = useNavigate();
 
   useEffect(() => {
     setUser(JSON.parse(localStorage.getItem("user")));
-   
 
     const fetchAllUser = async () => {
       const user = await getAlluser();
@@ -44,6 +50,14 @@ const App = () => {
     setSearch("");
     setNewChat((prev) => prev + 1);
   };
+
+  const handleChatingto = (chat) => {
+    setChatingto(chat);
+  }
+
+
+
+
   return (
     <Context.Provider value={{ dataToSend, setDataToSend }}>
       <div className="h-screen flex flex-col">
@@ -55,9 +69,14 @@ const App = () => {
           )}
           {user && <ShareButton />}
 
+          {/* Notification Logics */}
+
+          <Notification allNotification={allNotification} setAllNotification={setAllNotification} allUser={allUser} chatingto={chatingto} />
+
+          {/* Seacrh Logic */}
+
           {user ? (
             <div className="flex  justify-end gap-5">
-            
               <div>
                 <input
                   className="border-2 mt-1 border-gray-300 bg-white h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none"
@@ -137,7 +156,12 @@ const App = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/home" element={<Home />} />
           <Route path="/about" element={<About />} />
-          <Route path="/chat" element={<Chat newChat={newChat} />} />
+          <Route
+            path="/chat"
+            element={
+              <Chat newChat={newChat} allUser={allUser} handleChatingto={handleChatingto} allNotification={allNotification} setAllNotification={setAllNotification} />
+            }
+          />
           <Route path="*" element={<Notfound />} />
           <Route path="/file" element={<Upload />} />
         </Routes>

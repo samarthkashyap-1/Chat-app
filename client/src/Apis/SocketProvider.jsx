@@ -11,7 +11,7 @@ const SocketProvider = ({ children }) => {
     const socket = io("http://localhost:3001");
     setSocket(socket);
 
-    socket.emit("newUser", JSON.parse(localStorage.getItem("user")).id);
+    socket.emit("newUser", JSON.parse(localStorage.getItem("user"))?.id);
 
     socket.on("getOnlineUsers", (users) => {
       setOnlineUsers(users);

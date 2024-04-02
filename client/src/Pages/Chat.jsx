@@ -19,13 +19,14 @@ import Message from "../components/Message";
 import { uploadFile } from "../Apis/api";
 import CreateGroup from "../components/CreateGroup";
 
-
 import { SocketContext } from "../Apis/SocketProvider";
+import Notification from "../components/Notification";
 
-const Chat = ({ newChat }) => {
+const Chat = ({ newChat, allUser, handleChatingto , allNotification , setAllNotification }) => {
   const { socket, onlineUsers } = useContext(SocketContext);
 
   const [loading, setLoading] = useState(false);
+  // const [allNotification, setAllNotification] = useState([]);
   const [allGroupMember, setAllGroupMember] = useState([]);
   const [data, setData] = useState([]);
   const [chatingto, setChatingto] = useState("");
@@ -37,7 +38,7 @@ const Chat = ({ newChat }) => {
 
   const [groupChat, setGroupChat] = useState([]);
   const [file, setFile] = useState(null);
-  
+
   const chatScroll = useRef();
 
   const uploadClick = useRef(null);
@@ -178,7 +179,11 @@ const Chat = ({ newChat }) => {
 
     socket.on("getMessage", (data) => {
       console.log(data);
-      setMessages((prev) => [...prev, data]);
+
+      if (chatingto.id === data.chatId) {
+        setMessages((prev) => [...prev, data]);
+      }
+
       //
     });
 
@@ -270,6 +275,14 @@ const Chat = ({ newChat }) => {
     };
     uploading();
   }, [file]);
+
+  useEffect(() => {
+    const chattingto = () => {
+      handleChatingto(chatingto);
+    };
+    chattingto();
+  }, [chatingto]);
+
   return (
     <>
       <div className="h-screen">
@@ -277,12 +290,17 @@ const Chat = ({ newChat }) => {
 
         <div className="grid grid-cols-5 h-full gap-5 bg-gray-100 rounded-lg overflow-hidden shadow-lg">
           <div className="col-span-1 bg-blue-500 relative text-white py-4 px-2 flex flex-col items-center">
-            <h2 className="text-lg font-semibold mb-4 ">Chats</h2>
-            <CreateGroup />
+            <div className="flex justify-between w-full">
+              <h2 className="text-lg font-semibold mb-4 ">Chats</h2>
+              <CreateGroup />
+           
+            </div>
             <div className="w-full overflow-y-auto ">
               {data.map((chat) => {
                 return (
                   <Chatlist
+                    allNotification={allNotification}
+                    setAllNotification={setAllNotification}
                     key={chat.id}
                     chats={chat}
                     setChatingto={setChatingto}
@@ -311,7 +329,7 @@ const Chat = ({ newChat }) => {
                     <>{chatingto ? talkinTo[0].name : "Chat Area"}</>
                   ) : (
                     <>
-                      {groupActive && (
+                      {groupActive.length != 0 ? (
                         <>
                           <span className="">{groupActive.name}</span>
                           <>
@@ -323,6 +341,8 @@ const Chat = ({ newChat }) => {
                             </div>
                           </>
                         </>
+                      ) : (
+                        "Chat Area"
                       )}
                     </>
                   )}
@@ -357,26 +377,27 @@ const Chat = ({ newChat }) => {
                     Loading...
                   </h1>
                 ) : (
-                  <>
-                    {" "}
-                    {messages?.length !== 0
-                      ? messages?.map((message) => {
-                          return (
-                            <Message
-                              key={message.id}
-                              message={message}
-                              currentUser={JSON.parse(
-                                localStorage.getItem("user")
-                              )}
-                              ref={chatScroll}
-                            />
-                          );
-                        })
-                      : null}
-                  </>
+                  chatingto && (
+                    <>
+                      {messages?.length !== 0
+                        ? messages?.map((message) => {
+                            return (
+                              <Message
+                                key={message.id}
+                                message={message}
+                                currentUser={JSON.parse(
+                                  localStorage.getItem("user")
+                                )}
+                                ref={chatScroll}
+                              />
+                            );
+                          })
+                        : null}
+                    </>
+                  )
                 )}
               </div>
-              {messages !== null && (
+              {messages?.length != 0 && (
                 <div className="bg-gray-200 right-0 absolute left-0 bottom-0 py-3 px-4 border-t border-gray-300">
                   <InputEmoji
                     value={""}

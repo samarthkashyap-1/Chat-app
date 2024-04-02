@@ -19,7 +19,7 @@ const Chatlist = ({ chats, setGroupActive, setTalkingTo, onlineUsers }) => {
         {groupChat && <h1 className="text-xl font-semibold">{chats.name}</h1>}
       </div>
 
-      <img src={del} alt="" className="scale-75" />
+      {/* <img src={del} alt="" className="scale-75" /> */}
     </div>
   );
 };

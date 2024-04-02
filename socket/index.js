@@ -38,6 +38,16 @@ io.on("connection", (socket) => {
 
     if (receiver) {
       io.to(receiver.socketId).emit("getMessage", data);
+      io.to(receiver.socketId).emit("getNotification", {
+        sender: data.sender,
+        receiver: data.receiverId,
+        message: data.message,
+        date : new Date(),
+       isRead : false
+      })
+      
+
+
     }
   });
 });
